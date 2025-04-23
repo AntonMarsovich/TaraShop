@@ -39,3 +39,24 @@ def get_products():
     cur.close()
     conn.close()
     return products
+def add_user(first_name, last_name, email, password_hash):
+    conn = get_connection()
+    cur = conn.cursor()
+    cur.execute("""
+        INSERT INTO Users (first_name, last_name, email, password_hash)
+        VALUES (%s, %s, %s, %s);
+    """, (first_name, last_name, email, password_hash))
+    conn.commit()
+    cur.close()
+    conn.close()
+
+def add_product(name, description, price, stock_quantity):
+    conn = get_connection()
+    cur = conn.cursor()
+    cur.execute("""
+        INSERT INTO Products (name, description, price, stock_quantity)
+        VALUES (%s, %s, %s, %s);
+    """, (name, description, price, stock_quantity))
+    conn.commit()
+    cur.close()
+    conn.close()
