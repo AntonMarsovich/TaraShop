@@ -1,0 +1,56 @@
+<!doctype html>
+<html>
+<head>
+  <title>Пользователи</title>
+  <style>
+    body {
+      background-image: url('https://images.unsplash.com/photo-1581091870620-fd1ba1bfc365'); /* фон техники */
+      background-size: cover;
+      background-attachment: fixed;
+      font-family: Arial, sans-serif;
+      color: white;
+      text-shadow: 1px 1px 2px black;
+      padding: 20px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+      background-color: rgba(0,0,0,0.6);
+    }
+    th, td {
+      border: 1px solid white;
+      padding: 10px;
+      text-align: left;
+    }
+    a {
+      background-color: rgba(0,0,0,0.6);
+      padding: 10px 20px;
+      color: white;
+      text-decoration: none;
+      margin-right: 10px;
+      border-radius: 5px;
+      display: inline-block;
+    }
+  </style>
+</head>
+<body>
+  <h1>Список пользователей</h1>
+
+  <table>
+    <tr><th>ID</th><th>Имя</th><th>Фамилия</th><th>Email</th></tr>
+    {% for user in users %}
+      <tr>
+        <td>{{ user[0] }}</td>
+        <td>{{ user[1] }}</td>
+        <td>{{ user[2] }}</td>
+        <td>{{ user[3] }}</td>
+      </tr>
+    {% endfor %}
+  </table>
+
+  <br>
+  <a href="/">На главную</a>
+  <a href="/users">Пользователи</a> <!-- Дополнительная кнопка -->
+</body>
+</html>
