@@ -1,0 +1,61 @@
+<html>
+<head>
+<title>db.py</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #cf8e6d;}
+.s1 { color: #bcbec4;}
+.s2 { color: #bcbec4;}
+.s3 { color: #6aab73;}
+</style>
+</head>
+<body bgcolor="#1e1f22">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+db.py</font>
+</center></td></tr></table>
+<pre><span class="s0">import </span><span class="s1">psycopg2</span>
+
+<span class="s0">def </span><span class="s1">get_connection</span><span class="s2">():</span>
+    <span class="s0">return </span><span class="s1">psycopg2</span><span class="s2">.</span><span class="s1">connect</span><span class="s2">(</span>
+        <span class="s1">dbname</span><span class="s2">=</span><span class="s3">&quot;Taradb&quot;</span><span class="s2">,</span>
+        <span class="s1">user</span><span class="s2">=</span><span class="s3">&quot;postgres&quot;</span><span class="s2">,</span>
+        <span class="s1">password</span><span class="s2">=</span><span class="s3">&quot;123&quot;</span><span class="s2">,</span>
+        <span class="s1">host</span><span class="s2">=</span><span class="s3">&quot;localhost&quot;</span><span class="s2">,</span>
+        <span class="s1">port</span><span class="s2">=</span><span class="s3">&quot;5432&quot;</span>
+    <span class="s2">)</span>
+
+<span class="s0">def </span><span class="s1">get_users</span><span class="s2">():</span>
+    <span class="s1">conn </span><span class="s2">= </span><span class="s1">get_connection</span><span class="s2">()</span>
+    <span class="s1">cur </span><span class="s2">= </span><span class="s1">conn</span><span class="s2">.</span><span class="s1">cursor</span><span class="s2">()</span>
+    <span class="s1">cur</span><span class="s2">.</span><span class="s1">execute</span><span class="s2">(</span><span class="s3">&quot;SELECT user_id, first_name, last_name, email FROM Users;&quot;</span><span class="s2">)</span>
+    <span class="s1">users </span><span class="s2">= </span><span class="s1">cur</span><span class="s2">.</span><span class="s1">fetchall</span><span class="s2">()</span>
+    <span class="s1">cur</span><span class="s2">.</span><span class="s1">close</span><span class="s2">()</span>
+    <span class="s1">conn</span><span class="s2">.</span><span class="s1">close</span><span class="s2">()</span>
+    <span class="s0">return </span><span class="s1">users</span>
+
+<span class="s0">def </span><span class="s1">get_orders</span><span class="s2">():</span>
+    <span class="s1">conn </span><span class="s2">= </span><span class="s1">get_connection</span><span class="s2">()</span>
+    <span class="s1">cur </span><span class="s2">= </span><span class="s1">conn</span><span class="s2">.</span><span class="s1">cursor</span><span class="s2">()</span>
+    <span class="s1">cur</span><span class="s2">.</span><span class="s1">execute</span><span class="s2">(</span><span class="s3">&quot;&quot;&quot; 
+        SELECT o.order_id, u.first_name, u.last_name, o.order_date, o.status 
+        FROM Orders o 
+        JOIN Users u ON o.user_id = u.user_id; 
+    &quot;&quot;&quot;</span><span class="s2">)</span>
+    <span class="s1">orders </span><span class="s2">= </span><span class="s1">cur</span><span class="s2">.</span><span class="s1">fetchall</span><span class="s2">()</span>
+    <span class="s1">cur</span><span class="s2">.</span><span class="s1">close</span><span class="s2">()</span>
+    <span class="s1">conn</span><span class="s2">.</span><span class="s1">close</span><span class="s2">()</span>
+    <span class="s0">return </span><span class="s1">orders</span>
+
+<span class="s0">def </span><span class="s1">get_products</span><span class="s2">():</span>
+    <span class="s1">conn </span><span class="s2">= </span><span class="s1">get_connection</span><span class="s2">()</span>
+    <span class="s1">cur </span><span class="s2">= </span><span class="s1">conn</span><span class="s2">.</span><span class="s1">cursor</span><span class="s2">()</span>
+    <span class="s1">cur</span><span class="s2">.</span><span class="s1">execute</span><span class="s2">(</span><span class="s3">&quot;SELECT product_id, name, price, stock_quantity FROM Products;&quot;</span><span class="s2">)</span>
+    <span class="s1">products </span><span class="s2">= </span><span class="s1">cur</span><span class="s2">.</span><span class="s1">fetchall</span><span class="s2">()</span>
+    <span class="s1">cur</span><span class="s2">.</span><span class="s1">close</span><span class="s2">()</span>
+    <span class="s1">conn</span><span class="s2">.</span><span class="s1">close</span><span class="s2">()</span>
+    <span class="s0">return </span><span class="s1">products</span>
+</pre>
+</body>
+</html>

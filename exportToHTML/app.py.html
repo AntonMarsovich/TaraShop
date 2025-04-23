@@ -1,0 +1,47 @@
+<html>
+<head>
+<title>app.py</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #cf8e6d;}
+.s1 { color: #bcbec4;}
+.s2 { color: #bcbec4;}
+.s3 { color: #7a7e85;}
+.s4 { color: #6aab73;}
+</style>
+</head>
+<body bgcolor="#1e1f22">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+app.py</font>
+</center></td></tr></table>
+<pre><span class="s0">from </span><span class="s1">flask </span><span class="s0">import </span><span class="s1">Flask</span><span class="s2">, </span><span class="s1">render_template</span>
+<span class="s0">from </span><span class="s1">db </span><span class="s0">import </span><span class="s1">get_users</span><span class="s2">, </span><span class="s1">get_orders</span><span class="s2">, </span><span class="s1">get_products  </span><span class="s3"># Убедись, что добавил get_products в db.py</span>
+
+<span class="s1">app </span><span class="s2">= </span><span class="s1">Flask</span><span class="s2">(</span><span class="s1">__name__</span><span class="s2">)</span>
+
+<span class="s2">@</span><span class="s1">app</span><span class="s2">.</span><span class="s1">route</span><span class="s2">(</span><span class="s4">&quot;/&quot;</span><span class="s2">)</span>
+<span class="s0">def </span><span class="s1">index</span><span class="s2">():</span>
+    <span class="s0">return </span><span class="s1">render_template</span><span class="s2">(</span><span class="s4">&quot;index.html&quot;</span><span class="s2">)</span>
+
+<span class="s2">@</span><span class="s1">app</span><span class="s2">.</span><span class="s1">route</span><span class="s2">(</span><span class="s4">&quot;/users&quot;</span><span class="s2">)</span>
+<span class="s0">def </span><span class="s1">users</span><span class="s2">():</span>
+    <span class="s1">data </span><span class="s2">= </span><span class="s1">get_users</span><span class="s2">()</span>
+    <span class="s0">return </span><span class="s1">render_template</span><span class="s2">(</span><span class="s4">&quot;users.html&quot;</span><span class="s2">, </span><span class="s1">users</span><span class="s2">=</span><span class="s1">data</span><span class="s2">)</span>
+
+<span class="s2">@</span><span class="s1">app</span><span class="s2">.</span><span class="s1">route</span><span class="s2">(</span><span class="s4">&quot;/orders&quot;</span><span class="s2">)</span>
+<span class="s0">def </span><span class="s1">orders</span><span class="s2">():</span>
+    <span class="s1">data </span><span class="s2">= </span><span class="s1">get_orders</span><span class="s2">()</span>
+    <span class="s0">return </span><span class="s1">render_template</span><span class="s2">(</span><span class="s4">&quot;orders.html&quot;</span><span class="s2">, </span><span class="s1">orders</span><span class="s2">=</span><span class="s1">data</span><span class="s2">)</span>
+
+<span class="s2">@</span><span class="s1">app</span><span class="s2">.</span><span class="s1">route</span><span class="s2">(</span><span class="s4">'/products'</span><span class="s2">)</span>
+<span class="s0">def </span><span class="s1">products</span><span class="s2">():</span>
+    <span class="s1">products </span><span class="s2">= </span><span class="s1">get_products</span><span class="s2">()  </span><span class="s3"># Получаем данные о продуктах из базы данных</span>
+    <span class="s0">return </span><span class="s1">render_template</span><span class="s2">(</span><span class="s4">'product.html'</span><span class="s2">, </span><span class="s1">products</span><span class="s2">=</span><span class="s1">products</span><span class="s2">)</span>
+
+<span class="s0">if </span><span class="s1">__name__ </span><span class="s2">== </span><span class="s4">'__main__'</span><span class="s2">:</span>
+    <span class="s1">app</span><span class="s2">.</span><span class="s1">run</span><span class="s2">(</span><span class="s1">debug</span><span class="s2">=</span><span class="s0">True</span><span class="s2">)</span>
+</pre>
+</body>
+</html>
