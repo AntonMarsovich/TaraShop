@@ -1,15 +1,82 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head><meta charset="UTF-8"><title>Добавить продукт</title></head>
+<!doctype html>
+<html>
+<head>
+  <title>Добавить продукт</title>
+  <style>
+    body {
+      background-image: url('https://images.unsplash.com/photo-1542751110-97427bbecf20');
+      background-size: cover;
+      background-position: center;
+      font-family: Arial, sans-serif;
+      color: white;
+      text-align: center;
+    }
+
+    .overlay {
+      background: rgba(0, 0, 0, 0.6);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    h1 {
+      font-size: 2.5em;
+      margin-bottom: 20px;
+    }
+
+    .btn {
+      background-color: #2196F3;
+      color: white;
+      border: none;
+      padding: 15px 30px;
+      margin: 10px;
+      font-size: 1.2em;
+      cursor: pointer;
+      border-radius: 8px;
+      transition: background-color 0.3s ease;
+    }
+
+    .btn:hover {
+      background-color: #1976D2;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    input, textarea {
+      padding: 10px;
+      margin: 10px;
+      width: 300px;
+      font-size: 1.1em;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+
+    textarea {
+      resize: vertical;
+      height: 100px;
+    }
+  </style>
+</head>
 <body>
-  <h1>Добавить продукт</h1>
-  <form method="POST">
-    Название: <input type="text" name="name"><br>
-    Описание: <input type="text" name="description"><br>
-    Цена: <input type="number" step="0.01" name="price"><br>
-    Кол-во на складе: <input type="number" name="stock_quantity"><br>
-    <button type="submit">Добавить</button>
-  </form>
-  <a href="/">На главную</a>
+  <div class="overlay">
+    <h1>Добавить продукт</h1>
+    <form method="POST">
+      <input type="text" name="name" placeholder="Название продукта" required>
+      <textarea name="description" placeholder="Описание продукта" required></textarea>
+      <input type="number" name="price" placeholder="Цена" required>
+      <input type="number" name="stock_quantity" placeholder="Количество в наличии" required>
+      <button class="btn" type="submit">Добавить продукт</button>
+    </form>
+
+    <a href="/" class="btn">На главную</a>
+    <a href="/products" class="btn">Назад к продуктам</a>
+  </div>
 </body>
 </html>

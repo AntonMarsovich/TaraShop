@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
-  <title>TaraShop</title>
+  <title>TaraShop - Вход или Регистрация</title>
   <style>
     body {
       margin: 0;
@@ -38,40 +38,101 @@
       cursor: pointer;
       border-radius: 8px;
       transition: background-color 0.3s ease;
+      text-decoration: none;
+      display: inline-block;
     }
 
     .btn:hover {
       background-color: #1976D2;
     }
+
+    .form-container {
+      background: rgba(0, 0, 0, 0.7);
+      padding: 30px;
+      border-radius: 8px;
+      width: 300px;
+      display: inline-block;
+    }
+
+    input[type="text"], input[type="password"] {
+      padding: 10px;
+      width: 100%;
+      margin-bottom: 10px;
+      border-radius: 5px;
+      border: none;
+    }
+
+    .form-container button {
+      background-color: #4CAF50;
+      font-size: 1.2em;
+      padding: 10px;
+      width: 100%;
+      cursor: pointer;
+      border-radius: 5px;
+      margin-top: 10px;
+    }
+
+    .form-container button:hover {
+      background-color: #45a049;
+    }
+
+    .toggle-link {
+      color: #ffffff;
+      font-size: 0.9em;
+      text-decoration: underline;
+      cursor: pointer;
+      margin-top: 15px;
+    }
   </style>
 </head>
 <body>
+
   <div class="overlay">
-    <h1>Добро пожаловать в TaraShop</h1>
-    <button class="btn" onclick="location.href='/products'">Продукты</button>
-    <button class="btn" onclick="location.href='/orders'">Заказы</button>
-    <button class="btn" onclick="location.href='/users'">Пользователи</button>
+    {% if not logged_in %}
+      <!-- Форма входа -->
+      <div class="form-container" id="authForm">
+        <h1>Добро пожаловать в TaraShop</h1>
+
+        <form method="POST" action="/login" id="loginForm">
+          <input type="text" name="username" placeholder="Логин" required>
+          <input type="password" name="password" placeholder="Пароль" required>
+          <button type="submit">Войти</button>
+        </form>
+
+        <p class="toggle-link" onclick="toggleForm()">Еще нет аккаунта? Зарегистрируйтесь!</p>
+      </div>
+
+      <!-- Форма регистрации -->
+      <div class="form-container" id="registerForm" style="display: none;">
+        <h1>Регистрация</h1>
+
+        <form method="POST" action="/register">
+          <input type="text" name="username" placeholder="Логин" required>
+          <input type="password" name="password" placeholder="Пароль" required>
+          <button type="submit">Зарегистрироваться</button>
+        </form>
+
+        <p class="toggle-link" onclick="toggleForm()">Уже есть аккаунт? Войдите!</p>
+      </div>
+
+    {% else %}
+      <!-- Кнопки после входа -->
+      <h1>Добро пожаловать в TaraShop</h1>
+      <a class="btn" href="/products">Продукты</a>
+      <a class="btn" href="/orders">Заказы</a>
+      <a class="btn" href="/users">Пользователи</a>
+      <a class="btn" href="/logout">Выйти</a>
+    {% endif %}
   </div>
+
+  <script>
+    function toggleForm() {
+      const loginForm = document.getElementById("authForm");
+      const registerForm = document.getElementById("registerForm");
+      loginForm.style.display = loginForm.style.display === "none" ? "inline-block" : "none";
+      registerForm.style.display = registerForm.style.display === "none" ? "inline-block" : "none";
+    }
+  </script>
+
 </body>
 </html>
-def add_user(first_name, last_name, email, password_hash):
-    conn = get_connection()
-    cur = conn.cursor()
-    cur.execute("""
-        INSERT INTO Users (first_name, last_name, email, password_hash)
-        VALUES (%s, %s, %s, %s);
-    """, (first_name, last_name, email, password_hash))
-    conn.commit()
-    cur.close()
-    conn.close()
-
-def add_product(name, description, price, stock_quantity):
-    conn = get_connection()
-    cur = conn.cursor()
-    cur.execute("""
-        INSERT INTO Products (name, description, price, stock_quantity)
-        VALUES (%s, %s, %s, %s);
-    """, (name, description, price, stock_quantity))
-    conn.commit()
-    cur.close()
-    conn.close()
