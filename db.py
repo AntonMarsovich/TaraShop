@@ -2,6 +2,7 @@ import psycopg2
 import hashlib
 import redis
 
+# Сначала определяем get_connection
 def get_connection():
     return psycopg2.connect(
         dbname="Taradb",
@@ -14,7 +15,7 @@ def get_connection():
 # Redis клиент
 r = redis.StrictRedis(host='localhost', port=6379, db=0, decode_responses=True)
 
-# Получение зарегистрированных пользователей (для логина)
+# Получение пользователей из Reg_users (для логина)
 def get_registered_users():
     conn = get_connection()
     cur = conn.cursor()
@@ -24,11 +25,24 @@ def get_registered_users():
     conn.close()
     return users
 
-# Получение пользователей из таблицы Users (отображение)
+# Добавление в Reg_users
+def add_registered_user(username, password):
+    password_hash = hashlib.sha256(password.encode()).hexdigest()
+    conn = get_connection()
+    cur = conn.cursor()
+    cur.execute("""
+        INSERT INTO Reg_users (username, password_hash)
+        VALUES (%s, %s);
+    """, (username, password_hash))
+    conn.commit()
+    cur.close()
+    conn.close()
+
+# Пользователи из Users (для отображения)
 def get_users():
     cached = r.get("users")
     if cached:
-        return eval(cached)  # Желательно заменить на json.loads в будущем
+        return eval(cached)
 
     conn = get_connection()
     cur = conn.cursor()
@@ -36,9 +50,20 @@ def get_users():
     users = cur.fetchall()
     cur.close()
     conn.close()
-
     r.setex("users", 3600, str(users))
     return users
+
+# Добавление пользователя в Users
+def add_user(first_name, last_name, email, password=""):
+    conn = get_connection()
+    cur = conn.cursor()
+    cur.execute("""
+        INSERT INTO Users (first_name, last_name, email)
+        VALUES (%s, %s, %s);
+    """, (first_name, last_name, email))
+    conn.commit()
+    cur.close()
+    conn.close()
 
 # Получение заказов
 def get_orders():
@@ -54,7 +79,7 @@ def get_orders():
     conn.close()
     return orders
 
-# Получение продуктов
+# Продукты
 def get_products():
     conn = get_connection()
     cur = conn.cursor()
@@ -64,32 +89,7 @@ def get_products():
     conn.close()
     return products
 
-# Регистрация пользователя в Reg_users
-def add_registered_user(username, password):
-    password_hash = hashlib.sha256(password.encode()).hexdigest()
-    conn = get_connection()
-    cur = conn.cursor()
-    cur.execute("""
-        INSERT INTO Reg_users (username, password_hash)
-        VALUES (%s, %s);
-    """, (username, password_hash))
-    conn.commit()
-    cur.close()
-    conn.close()
-
-# Добавление в таблицу Users (отдельные данные)
-def add_user(first_name, last_name, email, password=""):
-    conn = get_connection()
-    cur = conn.cursor()
-    cur.execute("""
-        INSERT INTO Users (first_name, last_name, email)
-        VALUES (%s, %s, %s);
-    """, (first_name, last_name, email))
-    conn.commit()
-    cur.close()
-    conn.close()
-
-# Добавление продукта
+# Добавление товара
 def add_product(name, description, price, stock_quantity):
     conn = get_connection()
     cur = conn.cursor()
