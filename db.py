@@ -1,8 +1,8 @@
 import psycopg2
 import hashlib
 import redis
+import json
 
-# Сначала определяем get_connection
 def get_connection():
     return psycopg2.connect(
         dbname="Taradb",
@@ -12,10 +12,8 @@ def get_connection():
         port="5432"
     )
 
-# Redis клиент
 r = redis.StrictRedis(host='localhost', port=6379, db=0, decode_responses=True)
 
-# Получение пользователей из Reg_users (для логина)
 def get_registered_users():
     conn = get_connection()
     cur = conn.cursor()
@@ -25,7 +23,6 @@ def get_registered_users():
     conn.close()
     return users
 
-# Добавление в Reg_users
 def add_registered_user(username, password):
     password_hash = hashlib.sha256(password.encode()).hexdigest()
     conn = get_connection()
@@ -38,34 +35,60 @@ def add_registered_user(username, password):
     cur.close()
     conn.close()
 
-# Пользователи из Users (для отображения)
 def get_users():
     cached = r.get("users")
     if cached:
-        return eval(cached)
+        return json.loads(cached)
 
-    conn = get_connection()
-    cur = conn.cursor()
-    cur.execute("SELECT user_id, first_name, last_name, email FROM Users;")
-    users = cur.fetchall()
-    cur.close()
-    conn.close()
-    r.setex("users", 3600, str(users))
-    return users
-
-# Добавление пользователя в Users
-def add_user(first_name, last_name, email, password=""):
     conn = get_connection()
     cur = conn.cursor()
     cur.execute("""
-        INSERT INTO Users (first_name, last_name, email)
-        VALUES (%s, %s, %s);
-    """, (first_name, last_name, email))
+        SELECT user_id, first_name, last_name, email, phone_number, registration_date
+        FROM Users;
+    """)
+    rows = cur.fetchall()
+    users = [
+        {
+            "user_id": row[0],
+            "first_name": row[1],
+            "last_name": row[2],
+            "email": row[3],
+            "phone_number": row[4],
+            "registration_date": str(row[5])
+        }
+        for row in rows
+    ]
+    cur.close()
+    conn.close()
+
+    r.setex("users", 3600, json.dumps(users))
+    return users
+
+def add_user(first_name, last_name, email, phone_number=None, password=None):
+    password_hash = hashlib.sha256(password.encode()).hexdigest() if password else None
+
+    conn = get_connection()
+    cur = conn.cursor()
+    cur.execute("""
+        INSERT INTO users (first_name, last_name, email, phone_number, password_hash, registration_date)
+        VALUES (%s, %s, %s, %s, %s, CURRENT_DATE);
+    """, (first_name, last_name, email, phone_number, password_hash))
     conn.commit()
     cur.close()
     conn.close()
 
-# Получение заказов
+def update_user(user_id, first_name, last_name, email):
+    conn = get_connection()
+    cur = conn.cursor()
+    cur.execute("""
+        UPDATE Users
+        SET first_name = %s, last_name = %s, email = %s
+        WHERE user_id = %s;
+    """, (first_name, last_name, email, user_id))
+    conn.commit()
+    cur.close()
+    conn.close()
+
 def get_orders():
     conn = get_connection()
     cur = conn.cursor()
@@ -79,17 +102,18 @@ def get_orders():
     conn.close()
     return orders
 
-# Продукты
 def get_products():
     conn = get_connection()
     cur = conn.cursor()
-    cur.execute("SELECT product_id, name, price, stock_quantity FROM Products;")
+    cur.execute("""
+        SELECT product_id, name, price, stock_quantity
+        FROM Products;
+    """)
     products = cur.fetchall()
     cur.close()
     conn.close()
     return products
 
-# Добавление товара
 def add_product(name, description, price, stock_quantity):
     conn = get_connection()
     cur = conn.cursor()
